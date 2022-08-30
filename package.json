@@ -1,0 +1,25 @@
+{
+  "name": "test",
+  "description": "",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node .",
+    "command-deploy": "node dist/deploy-commands.js",
+    "watch": "tsc -w",
+    "serve": "node dist/deploy-commands.js && node ."
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.13.0",
+    "@discordjs/rest": "^0.4.1",
+    "discord-api-types": "^0.33.0",
+    "discord.js": "^13.7.0",
+    "dotenv": "^16.0.1"
+  },
+  "devDependencies": {},
+  "keywords": [
+
+  ],
+  "author": "FloatingComet62",
+  "license": "MIT"
+}
