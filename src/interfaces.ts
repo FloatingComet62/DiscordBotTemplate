@@ -26,7 +26,8 @@ export interface CommandData {
 }
 
 export interface AppClient extends Client {
-	commands?: Collection<string, CommandData>;
+	commands: Collection<string, CommandData>;
+	cooldowns: Collection<string, Collection<string, number>>;
 }
 
 export interface EventData {
