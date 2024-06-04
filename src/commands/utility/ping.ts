@@ -9,4 +9,4 @@ async function execute(interaction: InteractionType) {
 	await interaction.reply('Pong');
 }
 
-export { data, execute };
+export default { data, execute } as CommandData;
