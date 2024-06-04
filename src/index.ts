@@ -1,41 +1,76 @@
-import { Client, Intents, Collection } from 'discord.js';
-import { customClient, Command, Event } from './interfaces';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
-dotenv.config();
+import {
+    Client,
+    Collection,
+    Events,
+    GatewayIntentBits,
+    InteractionReplyOptions,
+} from 'discord.js';
+import { config } from 'dotenv';
+import { CommandData } from './interfaces';
 
-const client: customClient = new Client({
-    intents: [
-        Intents.FLAGS.GUILDS
-    ]
-});
-
-// Command Loader
-client.commands = new Collection();
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
-for(const file of commandFiles){
-	const filePath = path.join(commandsPath, file);
-	const command: Command = require(filePath);
-
-	client.commands.set(command.data.toJSON().name, command);
-}
-
-// Event Loader
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter((file: string) => file.endsWith('.js'));
-for(const file of eventFiles){
-	const filePath = path.join(eventsPath, file);
-	const event: Event = require(filePath);
-
-	if(event.once) client.once(event.name, (...args: any[]) => eventExecuter(event.needClient, ...args));
-	else client.on(event.name, (...args: any[]) => eventExecuter(event.needClient, ...args));
-
-    function eventExecuter(needClient: boolean, ...args: any[]){
-        if(needClient) event.execute(client, ...args);
-        else event.execute(...args);
+declare global {
+    namespace NodeJS {
+        interface ProcessEnv {
+            TOKEN: string;
+            CLIENT_ID: string;
+            GUILD_ID: string;
+        }
     }
 }
+
+config();
+
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds],
+});
+
+client.once(Events.ClientReady, (readyClient) => {
+    console.log(`Logged in as ${readyClient.user.tag}`);
+});
+
+const commands = new Collection<string, CommandData>();
+
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
+
+for (const folder of commandFolders) {
+    const commandsPath = path.join(foldersPath, folder);
+    const commandFiles = fs
+        .readdirSync(commandsPath)
+        .filter((file) => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const filePath = path.join(commandsPath, file);
+        const command = require(filePath) as CommandData;
+        commands.set(command.data.name, command);
+    }
+}
+
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = commands.get(interaction.commandName);
+
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        const options: InteractionReplyOptions = {
+            content: 'There was an error while executing this command!',
+            ephemeral: true,
+        };
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp(options);
+        } else {
+            await interaction.reply(options);
+        }
+    }
+});
 
 client.login(process.env.TOKEN);

@@ -1,25 +1,31 @@
 {
-  "name": "test",
-  "description": "",
+  "name": "discord-bot",
   "version": "1.0.0",
+  "description": "A discord bot template",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node .",
-    "command-deploy": "node dist/deploy-commands.js",
+    "build": "tsc",
     "watch": "tsc -w",
-    "serve": "node dist/deploy-commands.js && node ."
+    "test": "echo \"No Test\"",
+    "start": "node .",
+    "lint": "prettier --ignore-path .gitignore --write \"**/*.+(ts)\"",
+    "deploy": "node dist/deploy-commands.js",
+    "serve": "npm run build && npm run deploy && npm run start"
   },
-  "dependencies": {
-    "@discordjs/builders": "^0.13.0",
-    "@discordjs/rest": "^0.4.1",
-    "discord-api-types": "^0.33.0",
-    "discord.js": "^13.7.0",
-    "dotenv": "^16.0.1"
-  },
-  "devDependencies": {},
   "keywords": [
-
+    "discord-bot",
+    "discord"
   ],
   "author": "FloatingComet62",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/builders": "^1.8.2",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.1",
+    "prettier": "^3.3.0",
+    "typescript": "^5.4.5"
+  }
 }
