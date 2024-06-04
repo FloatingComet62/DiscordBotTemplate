@@ -24,19 +24,20 @@ async function execute(client: AppClient, interaction: InteractionType) {
 	const cooldownAmount = command.cooldown * 1000;
 
 	if (timestamps.has(interaction.user.id)) {
-		const expirationTime = (timestamps.get(interaction.user.id) || 0) + cooldownAmount;
+		const expirationTime =
+			(timestamps.get(interaction.user.id) || 0) + cooldownAmount;
 
 		if (expirationTime > now) {
 			const expiredTimestamp = Math.round(expirationTime / 1000);
 			return interaction.reply({
 				content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
-				ephemeral: true
-			})
+				ephemeral: true,
+			});
 		}
 	}
 
 	timestamps.set(interaction.user.id, now);
-	setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount)
+	setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
 	try {
 		await command.execute(interaction);

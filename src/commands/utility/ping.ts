@@ -4,7 +4,7 @@ import { CommandData, InteractionType } from '../../interfaces';
 const data = new SlashCommandBuilder()
 	.setName('ping')
 	.setDescription('Replies with Pong');
-const cooldown = 5
+const cooldown = 5;
 
 async function execute(interaction: InteractionType) {
 	await interaction.reply('Pong');
