@@ -2,11 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { config } from 'dotenv';
-import { CommandData, AppClient } from './interfaces';
+import { AppClient } from './interfaces';
 import { COMMANDS_DIR, EVENTS_DIR, JS_FILE } from './consts';
 import { loadCommand, loadEvent } from './loader';
+import KeyV from 'keyv';
 
 config();
+
+const keyV = new KeyV({
+	uri: process.env.CONNECTION_URI,
+});
+
+keyV.on('error', (error) => console.error(`KeyV Connection Error\n${error}`));
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds],
