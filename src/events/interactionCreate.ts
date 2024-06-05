@@ -25,8 +25,7 @@ async function execute(client: AppClient, interaction: InteractionType) {
 	const cooldownAmount = command.cooldown * SECONDS_TO_MS;
 
 	if (timestamps.has(interaction.user.id)) {
-		const expirationTime =
-			(timestamps.get(interaction.user.id) || 0) + cooldownAmount;
+		const expirationTime = timestamps.get(interaction.user.id)! + cooldownAmount;
 
 		if (expirationTime > now) {
 			const expiredTimestamp = Math.round(expirationTime * MS_TO_SECONDS);
