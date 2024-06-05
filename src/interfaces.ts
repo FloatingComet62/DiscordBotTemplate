@@ -17,7 +17,9 @@ declare global {
 	}
 }
 
-export type InteractionType = ChatInputCommandInteraction<CacheType>;
+export type InteractionType = ChatInputCommandInteraction<CacheType> & {
+	client: AppClient;
+};
 
 export interface CommandData {
 	cooldown: number;

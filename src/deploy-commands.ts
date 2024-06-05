@@ -2,22 +2,21 @@ import fs from 'fs';
 import path from 'path';
 import { REST, Routes } from 'discord.js';
 import { config } from 'dotenv';
-import { CommandData } from './interfaces';
+import { COMMANDS_DIR, JS_FILE } from './consts';
+import { loadCommand } from './loader';
 
 config();
 
 const commands: any[] = [];
-const folderPath = path.join(__dirname, 'commands');
+const folderPath = path.join(__dirname, COMMANDS_DIR);
 const commandFolders = fs.readdirSync(folderPath);
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(folderPath, folder);
-	const commandFiles = fs
-		.readdirSync(commandsPath)
-		.filter((file) => file.endsWith('.js'));
+	const commandFiles = fs.readdirSync(commandsPath).filter(JS_FILE);
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath) as CommandData;
+		const command = loadCommand(filePath);
 		commands.push(command.data.toJSON());
 	}
 }

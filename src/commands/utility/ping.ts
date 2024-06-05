@@ -7,7 +7,7 @@ const data = new SlashCommandBuilder()
 const cooldown = 5;
 
 async function execute(interaction: InteractionType) {
-	await interaction.reply('Pong');
+	await interaction.reply('Pong!');
 }
 
 export default { data, cooldown, execute } as CommandData;

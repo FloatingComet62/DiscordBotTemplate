@@ -1,14 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import {
-	Client,
-	Collection,
-	Events,
-	GatewayIntentBits,
-	InteractionReplyOptions,
-} from 'discord.js';
+import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { config } from 'dotenv';
-import { CommandData, AppClient, EventData } from './interfaces';
+import { CommandData, AppClient } from './interfaces';
+import { COMMANDS_DIR, EVENTS_DIR, JS_FILE } from './consts';
+import { loadCommand, loadEvent } from './loader';
 
 config();
 
@@ -19,29 +15,25 @@ const client = new Client({
 client.commands = new Collection();
 client.cooldowns = new Collection();
 
-const foldersPath = path.join(__dirname, 'commands');
+const foldersPath = path.join(__dirname, COMMANDS_DIR);
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs
-		.readdirSync(commandsPath)
-		.filter((file) => file.endsWith('.js'));
+	const commandFiles = fs.readdirSync(commandsPath).filter(JS_FILE);
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath).default as CommandData;
+		const command = loadCommand(filePath);
 		client.commands.set(command.data.name, command);
 	}
 }
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs
-	.readdirSync(eventsPath)
-	.filter((file) => file.endsWith('.js'));
+const eventsPath = path.join(__dirname, EVENTS_DIR);
+const eventFiles = fs.readdirSync(eventsPath).filter(JS_FILE);
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
-	const event = require(filePath).default as EventData;
+	const event = loadEvent(filePath);
 	const lambda = (...args: any[]) => event.execute(client, ...args);
 	if (event.once) {
 		client.once(event.name, lambda);

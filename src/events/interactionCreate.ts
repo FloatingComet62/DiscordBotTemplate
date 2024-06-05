@@ -1,5 +1,6 @@
 import { Collection, Events, InteractionReplyOptions } from 'discord.js';
 import { AppClient, EventData, InteractionType } from '../interfaces';
+import { MS_TO_SECONDS, SECONDS_TO_MS } from '../consts';
 
 const name = Events.InteractionCreate;
 const once = false;
@@ -21,14 +22,14 @@ async function execute(client: AppClient, interaction: InteractionType) {
 
 	const now = Date.now();
 	const timestamps = cooldowns.get(command.data.name)!;
-	const cooldownAmount = command.cooldown * 1000;
+	const cooldownAmount = command.cooldown * SECONDS_TO_MS;
 
 	if (timestamps.has(interaction.user.id)) {
 		const expirationTime =
 			(timestamps.get(interaction.user.id) || 0) + cooldownAmount;
 
 		if (expirationTime > now) {
-			const expiredTimestamp = Math.round(expirationTime / 1000);
+			const expiredTimestamp = Math.round(expirationTime * MS_TO_SECONDS);
 			return interaction.reply({
 				content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
 				ephemeral: true,
