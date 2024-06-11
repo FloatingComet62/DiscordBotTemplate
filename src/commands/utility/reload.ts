@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandData, InteractionType } from '../../interfaces';
+import { CommandData, InteractionType } from '../../types';
 import { loadCommand } from '../../loader';
 
 const data = new SlashCommandBuilder()

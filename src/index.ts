@@ -1,19 +1,19 @@
-import fs from 'fs';
-import path from 'path';
 import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { config } from 'dotenv';
-import { AppClient } from './interfaces';
-import { COMMANDS_DIR, EVENTS_DIR, JS_FILE } from './consts';
-import { loadCommand, loadEvent } from './loader';
+import { AppClient } from './types';
+import { iterateCommands, iterateEvents } from './loader';
 import KeyV from 'keyv';
 
 config();
 
-const keyV = new KeyV({
-	uri: process.env.CONNECTION_URI,
-});
+let keyV: KeyV | null = null;
+if (KeyV) {
+	keyV = new KeyV({
+		uri: process.env.CONNECTION_URI,
+	});
+}
 
-keyV.on('error', (error) => console.error(`KeyV Connection Error\n${error}`));
+keyV?.on('error', (error) => console.error(`KeyV Connection Error\n${error}`));
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds],
@@ -22,31 +22,17 @@ const client = new Client({
 client.commands = new Collection();
 client.cooldowns = new Collection();
 
-const foldersPath = path.join(__dirname, COMMANDS_DIR);
-const commandFolders = fs.readdirSync(foldersPath);
+iterateCommands((_, command) => {
+	client.commands.set(command.data.name, command);
+});
 
-for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(JS_FILE);
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = loadCommand(filePath);
-		client.commands.set(command.data.name, command);
-	}
-}
-
-const eventsPath = path.join(__dirname, EVENTS_DIR);
-const eventFiles = fs.readdirSync(eventsPath).filter(JS_FILE);
-
-for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = loadEvent(filePath);
+iterateEvents((event) => {
 	const lambda = (...args: any[]) => event.execute(client, ...args);
 	if (event.once) {
 		client.once(event.name, lambda);
 	} else {
 		client.on(event.name, lambda);
 	}
-}
+});
 
 client.login(process.env.TOKEN);

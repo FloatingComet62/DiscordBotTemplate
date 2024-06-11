@@ -1,25 +1,18 @@
-import fs from 'fs';
-import path from 'path';
-import { REST, Routes } from 'discord.js';
+import {
+	REST,
+	RESTPostAPIChatInputApplicationCommandsJSONBody as commandJSONData,
+	Routes,
+} from 'discord.js';
 import { config } from 'dotenv';
-import { COMMANDS_DIR, JS_FILE } from './consts';
-import { loadCommand } from './loader';
+import { iterateCommands } from './loader';
 
 config();
 
-const commands: any[] = [];
-const folderPath = path.join(__dirname, COMMANDS_DIR);
-const commandFolders = fs.readdirSync(folderPath);
+const commands: commandJSONData[] = [];
 
-for (const folder of commandFolders) {
-	const commandsPath = path.join(folderPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(JS_FILE);
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = loadCommand(filePath);
-		commands.push(command.data.toJSON());
-	}
-}
+iterateCommands((_, command) => {
+	commands.push(command.data.toJSON());
+});
 
 const rest = new REST().setToken(process.env.TOKEN);
 

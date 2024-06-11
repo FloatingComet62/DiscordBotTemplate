@@ -22,19 +22,19 @@ export type InteractionType = ChatInputCommandInteraction<CacheType> & {
 	client: AppClient;
 };
 
-export interface CommandData {
+export type CommandData = {
 	cooldown: number;
 	data: SlashCommandBuilder;
 	execute: (interaction: InteractionType) => Promise<void>;
-}
+};
 
-export interface AppClient extends Client {
+export type AppClient = Client & {
 	commands: Collection<string, CommandData>;
 	cooldowns: Collection<string, Collection<string, number>>;
-}
+};
 
-export interface EventData {
+export type EventData = {
 	name: keyof ClientEvents;
 	once: boolean;
 	execute: (client: AppClient, ...any: any[]) => Promise<void>;
-}
+};

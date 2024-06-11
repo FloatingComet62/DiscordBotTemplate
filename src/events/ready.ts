@@ -1,5 +1,5 @@
 import { Client, Events } from 'discord.js';
-import { AppClient, EventData } from '../interfaces';
+import { AppClient, EventData } from '../types';
 
 const name = Events.ClientReady;
 const once = true;

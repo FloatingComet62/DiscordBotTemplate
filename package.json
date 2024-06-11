@@ -2,7 +2,7 @@
   "name": "discord-bot",
   "version": "1.0.0",
   "description": "A discord bot template",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -10,7 +10,8 @@
     "start": "node .",
     "lint": "prettier --ignore-path .gitignore --write \"**/*.+(ts)\"",
     "deploy": "node dist/deploy-commands.js",
-    "serve": "npm run build && npm run deploy && npm run start"
+    "serve": "npm run build && npm run deploy && npm run start",
+    "clean": "rm -rf dist node_modules"
   },
   "keywords": [
     "discord-bot",
@@ -20,13 +21,19 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.8.2",
+    "discord-api-types": "^0.37.88",
     "discord.js": "^14.15.3",
-    "dotenv": "^16.4.5",
-    "keyv": "^4.5.4"
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.14.1",
+    "jest": "^29.7.0",
     "prettier": "^3.3.0",
+    "ts-jest": "^29.1.4",
     "typescript": "^5.4.5"
+  },
+  "optionalDependencies": {
+    "keyv": "^4.5.4"
   }
 }

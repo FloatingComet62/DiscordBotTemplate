@@ -1,5 +1,5 @@
 import { Collection, Events, InteractionReplyOptions } from 'discord.js';
-import { AppClient, EventData, InteractionType } from '../interfaces';
+import { AppClient, EventData, InteractionType } from '../types';
 import { MS_TO_SECONDS, SECONDS_TO_MS } from '../consts';
 
 const name = Events.InteractionCreate;
